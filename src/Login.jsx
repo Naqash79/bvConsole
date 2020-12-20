@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -8,7 +8,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { getUser, login, setToken } from "./service";
+import { Box, CircularProgress } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
+import { UserContext } from "./UserContext";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,6 +37,29 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { setUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      setLoading(true);
+      await login(username, password);
+      setToken();
+      setUser(getUser());
+      navigate("/", { replace: true });
+    } catch (ex) {
+      setError(ex.response.data.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <div className={classes.paper}>
@@ -42,7 +69,10 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+          <Box marginY={2} hidden={error === null ? true : false}>
+            <Alert severity="error">{error}</Alert>
+          </Box>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -53,6 +83,8 @@ export default function Login() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -65,6 +97,8 @@ export default function Login() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>
           </Grid>
@@ -74,8 +108,9 @@ export default function Login() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
-            Login
+            {loading ? <CircularProgress /> : "Login"}
           </Button>
           <Grid container justify="space-between">
             <Grid item>

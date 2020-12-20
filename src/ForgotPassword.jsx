@@ -10,8 +10,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
+import { forgotPassword, setNewPassword } from "./service";
 import { Alert } from "@material-ui/lab";
-import { confirmSignup, signup } from "./service";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,41 +33,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+export default function ForgotPassword() {
   const classes = useStyles();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = async (event) => {
-    setError(null);
+  const handleForgot = async (event) => {
     event.preventDefault();
+    setError(null);
     try {
       setLoading(true);
-      await signup(username, password);
+      await forgotPassword(username);
       setConfirm(true);
     } catch (ex) {
-      setError("Error");
+      setError(ex.response.data.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleConfirm = async (event) => {
-    setError(null);
     event.preventDefault();
+    setError(null);
     try {
       setLoading(true);
-      await confirmSignup(username, password, confirmationCode);
+      await setNewPassword(username, password, confirmationCode);
       navigate("/login", { replace: true });
     } catch (ex) {
-      setError("Error");
+      setError(ex.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -80,12 +79,12 @@ export default function SignUp() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign up
+          Forgot Password
         </Typography>
         <form
           className={classes.form}
           noValidate
-          onSubmit={confirm ? handleConfirm : handleSignup}
+          onSubmit={confirm ? handleConfirm : handleForgot}
         >
           <Box marginY={2} hidden={error === null ? true : false}>
             <Alert severity="error">{error}</Alert>
@@ -105,7 +104,7 @@ export default function SignUp() {
                 onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} hidden={!confirm}>
               <TextField
                 variant="outlined"
                 required
@@ -115,7 +114,6 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                disabled={confirm}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
@@ -125,9 +123,10 @@ export default function SignUp() {
                 variant="outlined"
                 required
                 fullWidth
-                id="confirmationCode"
-                label="ConfirmationCode"
                 name="confirmationCode"
+                label="Confirmation Code"
+                type="text"
+                id="confirmationCode"
                 autoComplete="confirmationCode"
                 value={confirmationCode}
                 onChange={(event) => setConfirmationCode(event.target.value)}
@@ -142,12 +141,12 @@ export default function SignUp() {
             className={classes.submit}
             disabled={loading}
           >
-            {loading ? <CircularProgress /> : "Sign up"}
+            {loading ? <CircularProgress /> : "Reset"}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
               <Link component={RouterLink} to="/login" variant="body2">
-                Already have an account? Sign in
+                Back to Login
               </Link>
             </Grid>
           </Grid>
