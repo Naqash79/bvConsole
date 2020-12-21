@@ -1,4 +1,4 @@
-import { Box, Container } from "@material-ui/core";
+import { Box, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
 import { getData, updateData } from "./service";
@@ -44,35 +44,57 @@ const Dashboard = () => {
 
   const handleAdd = async (newData) => {
     setLoading(true);
-    const prevData = { ...data };
-    prevData[newData.fieldName] = newData.fieldValue;
-    await updateData(prevData);
-    setData(prevData);
-    setLoading(false);
+    try {
+      const prevData = { ...data };
+      prevData[newData.fieldName] = newData.fieldValue;
+      await updateData(prevData);
+      setData(prevData);
+    } catch (ex) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpdate = async (newData, oldData) => {
     setLoading(true);
-    const prevData = { ...data };
-    delete prevData[oldData.fieldName];
-    prevData[newData.fieldName] = newData.fieldValue;
-    await updateData(prevData);
-    setData(prevData);
-    setLoading(false);
+    try {
+      const prevData = { ...data };
+      delete prevData[oldData.fieldName];
+      prevData[newData.fieldName] = newData.fieldValue;
+      await updateData(prevData);
+      setData(prevData);
+    } catch (ex) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (oldData) => {
     setLoading(true);
-    const prevData = { ...data };
-    delete prevData[oldData.fieldName];
-    await updateData(prevData);
-    setData(prevData);
-    setLoading(false);
+    try {
+      const prevData = { ...data };
+      delete prevData[oldData.fieldName];
+      await updateData(prevData);
+      setData(prevData);
+    } catch (ex) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location = "https://www.bonovox.net";
   };
 
   return (
     <Box margin={2}>
       <Container maxWidth="md">
+        <Box marginY={2} display="flex" justifyContent="flex-end">
+          <Button variant="contained" color="primary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
         <MaterialTable
           title="Dashboard"
           columns={columns}
