@@ -54,6 +54,14 @@ export default function Login() {
       setUser(getUser());
       navigate("/", { replace: true });
     } catch (ex) {
+      if (ex.response?.data?.code === "UserNotConfirmedException") {
+        navigate("/signup", {
+          state: {
+            username,
+            password,
+          },
+        });
+      }
       setError(ex.response.data.message);
     } finally {
       setLoading(false);

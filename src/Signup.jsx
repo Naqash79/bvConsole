@@ -8,7 +8,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { confirmSignup, signup } from "./service";
@@ -35,11 +35,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const location = useLocation();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("" || location.state.username);
+  const [password, setPassword] = useState("" || location.state.password);
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, setConfirm] = useState(
+    location.state.username ? true : false
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

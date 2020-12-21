@@ -71,8 +71,9 @@ const Dashboard = () => {
   const handleUpdate = async (newData, oldData) => {
     setLoading(true);
     try {
-      const prevData = { ...data };
-      prevData[newData.fieldName] = newData.fieldValue;
+      let prevData = { ...data };
+      delete prevData[oldData.fieldName];
+      prevData = { [newData.fieldName]: newData.fieldValue, ...prevData };
       await updateData(prevData);
       setData(prevData);
       snackbar("Data updated successfully.", { variant: "success" });
@@ -92,9 +93,9 @@ const Dashboard = () => {
       setData(prevData);
       snackbar("Data deleted successfully.", { variant: "success" });
     } catch (ex) {
+      snackbar("Unable to delete data.", { variant: "error" });
     } finally {
       setLoading(false);
-      snackbar("Unable to delete data.", { variant: "error" });
     }
   };
 
