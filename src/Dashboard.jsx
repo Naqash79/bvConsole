@@ -1,5 +1,6 @@
 import { Box, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
+import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { getData, updateData } from "./service";
 
@@ -7,14 +8,21 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { enqueueSnackbar: snackbar } = useSnackbar();
+
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await getData();
-      setData(data);
-      setLoading(false);
+      try {
+        const { data } = await getData();
+        setData(data);
+      } catch (ex) {
+        snackbar("Unable to fetch data.", { variant: "error" });
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
-  }, []);
+  }, [snackbar]);
 
   const columns = [
     { title: "Field Name", field: "fieldName" },
@@ -45,11 +53,16 @@ const Dashboard = () => {
   const handleAdd = async (newData) => {
     setLoading(true);
     try {
-      const prevData = { ...data };
-      prevData[newData.fieldName] = newData.fieldValue;
+      let prevData = { ...data };
+      prevData = {
+        [newData.fieldName]: newData.fieldValue,
+        ...prevData,
+      };
       await updateData(prevData);
       setData(prevData);
+      snackbar("Data added successfully.", { variant: "success" });
     } catch (ex) {
+      snackbar("Unable to add new data.", { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -59,11 +72,12 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const prevData = { ...data };
-      delete prevData[oldData.fieldName];
       prevData[newData.fieldName] = newData.fieldValue;
       await updateData(prevData);
       setData(prevData);
+      snackbar("Data updated successfully.", { variant: "success" });
     } catch (ex) {
+      snackbar("Unable to edit data.", { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -76,9 +90,11 @@ const Dashboard = () => {
       delete prevData[oldData.fieldName];
       await updateData(prevData);
       setData(prevData);
+      snackbar("Data deleted successfully.", { variant: "success" });
     } catch (ex) {
     } finally {
       setLoading(false);
+      snackbar("Unable to delete data.", { variant: "error" });
     }
   };
 
