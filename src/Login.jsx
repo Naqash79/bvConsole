@@ -58,7 +58,6 @@ export default function Login() {
         navigate("/signup", {
           state: {
             username,
-            password,
           },
         });
       }

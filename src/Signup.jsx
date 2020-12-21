@@ -37,11 +37,11 @@ export default function SignUp() {
   const classes = useStyles();
   const location = useLocation();
 
-  const [username, setUsername] = useState("" || location.state.username);
-  const [password, setPassword] = useState("" || location.state.password);
+  const [username, setUsername] = useState("" || location.state?.username);
+  const [password, setPassword] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [confirm, setConfirm] = useState(
-    location.state.username ? true : false
+    location.state?.username ? true : false
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -118,7 +118,6 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                disabled={confirm}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
