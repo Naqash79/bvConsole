@@ -13,6 +13,8 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { confirmSignup, signup } from "./service";
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\^$*.[\]{}()?\-“!@#%&/,><’:;|_~`])\S{8,99}$/;
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -39,6 +41,7 @@ export default function SignUp() {
 
   const [username, setUsername] = useState("" || location.state?.username);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [confirm, setConfirm] = useState(
     location.state?.username ? true : false
@@ -48,9 +51,26 @@ export default function SignUp() {
 
   const navigate = useNavigate();
 
+  const validatePassword = () => {
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return false;
+    }
+    if (!password.match(PASSWORD_REGEX)) {
+      setError(
+        "Password must contain 1 capital letter. 1 small letter. 1 number. 1 special character"
+      );
+      return false;
+    }
+    return true;
+  };
+
   const handleSignup = async (event) => {
     setError(null);
     event.preventDefault();
+    if (!validatePassword()) {
+      return;
+    }
     try {
       setLoading(true);
       await signup(username, password);
@@ -65,6 +85,9 @@ export default function SignUp() {
   const handleConfirm = async (event) => {
     setError(null);
     event.preventDefault();
+    if (!validatePassword()) {
+      return;
+    }
     try {
       setLoading(true);
       await confirmSignup(username, password, confirmationCode);
@@ -120,6 +143,19 @@ export default function SignUp() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
               />
             </Grid>
             <Grid item xs={12} hidden={!confirm}>
