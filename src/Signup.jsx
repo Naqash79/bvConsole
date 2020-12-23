@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -11,7 +11,8 @@ import Container from "@material-ui/core/Container";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { confirmSignup, signup } from "./service";
+import { confirmSignup, getUser, setToken, signup, login } from "./service";
+import { UserContext } from "./UserContext";
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\^$*.[\]{}()?\-“!@#%&/,><’:;|_~`])\S{8,99}$/;
 
@@ -50,6 +51,8 @@ export default function SignUp() {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+
+  const { setUser } = useContext(UserContext);
 
   const validatePassword = () => {
     if (password !== confirmPassword) {
@@ -91,7 +94,10 @@ export default function SignUp() {
     try {
       setLoading(true);
       await confirmSignup(username, password, confirmationCode);
-      navigate("/login", { replace: true });
+      await login(username, password);
+      setToken();
+      setUser(getUser());
+      navigate("/", { replace: true });
     } catch (ex) {
       setError("Error");
     } finally {

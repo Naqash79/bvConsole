@@ -122,7 +122,7 @@ const Dashboard = () => {
           }}
           isLoading={loading}
           editable={{
-            onRowAdd: (newData) => handleAdd(newData),
+            // onRowAdd: (newData) => handleAdd(newData),
             onRowUpdate: (newData, oldData) => handleUpdate(newData, oldData),
             onRowDelete: (oldData) => handleDelete(oldData),
           }}
