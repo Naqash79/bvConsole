@@ -63,7 +63,7 @@ export const forgotPassword = (Username) => {
 };
 
 export const setNewPassword = (Username, newPassword, verificationCode) => {
-  return Axios.post(url + "ForgotPassword", {
+  return Axios.put(url + "ForgotPassword", {
     Username,
     newPassword,
     verificationCode,
