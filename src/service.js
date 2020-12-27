@@ -85,3 +85,7 @@ export const getUser = () => {
   }
   return JSON.parse(localStorage.getItem("token"));
 };
+
+export const resendConfirmation = (Username) => {
+  return Axios.post(url + "SignUp", { type: "resendConfirmation", Username });
+};

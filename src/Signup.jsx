@@ -11,7 +11,13 @@ import Container from "@material-ui/core/Container";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { confirmSignup, getUser, setToken, signup, login } from "./service";
+import {
+  confirmSignup,
+  getUser,
+  setToken,
+  login,
+  resendConfirmation,
+} from "./service";
 import { UserContext } from "./UserContext";
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\^$*.[\]{}()?\-“!@#%&/,><’:;|_~`])\S{8,99}$/;
@@ -39,13 +45,16 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
   const location = useLocation();
+  const params = new URLSearchParams(location.search);
 
-  const [username, setUsername] = useState("" || location.state?.username);
+  const [username, setUsername] = useState(params.get("username") || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmationCode, setConfirmationCode] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState(
+    params.get("confirmationCode") || ""
+  );
   const [confirm, setConfirm] = useState(
-    location.state?.username ? true : false
+    username !== "" && confirmationCode !== "" ? true : false
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -53,6 +62,8 @@ export default function SignUp() {
   const navigate = useNavigate();
 
   const { setUser } = useContext(UserContext);
+
+  console.log(username, confirmationCode);
 
   const validatePassword = () => {
     if (password !== confirmPassword) {
@@ -71,15 +82,12 @@ export default function SignUp() {
   const handleSignup = async (event) => {
     setError(null);
     event.preventDefault();
-    if (!validatePassword()) {
-      return;
-    }
     try {
       setLoading(true);
-      await signup(username, password);
+      await resendConfirmation(username);
       setConfirm(true);
     } catch (ex) {
-      setError("Error");
+      setError(ex.response?.data);
     } finally {
       setLoading(false);
     }
@@ -99,7 +107,7 @@ export default function SignUp() {
       setUser(getUser());
       navigate("/", { replace: true });
     } catch (ex) {
-      setError("Error");
+      setError(ex.response?.data);
     } finally {
       setLoading(false);
     }
@@ -132,12 +140,11 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                disabled={confirm}
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} hidden={!confirm}>
               <TextField
                 variant="outlined"
                 required
@@ -151,7 +158,7 @@ export default function SignUp() {
                 onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} hidden={!confirm}>
               <TextField
                 variant="outlined"
                 required
@@ -186,7 +193,13 @@ export default function SignUp() {
             className={classes.submit}
             disabled={loading}
           >
-            {loading ? <CircularProgress /> : "Sign up"}
+            {loading ? (
+              <CircularProgress />
+            ) : confirm ? (
+              "Confirm Signup"
+            ) : (
+              "Send Confirmation Code"
+            )}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
