@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -12,7 +12,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { forgotPassword, setNewPassword } from "./service";
 import { Alert } from "@material-ui/lab";
-
+import {  getUser, setToken, login } from "./service";
+import { UserContext } from "./UserContext";
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -43,7 +44,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { setUser } = useContext(UserContext);
   const handleForgot = async (event) => {
     event.preventDefault();
     setError(null);
@@ -59,12 +60,17 @@ export default function ForgotPassword() {
   };
 
   const handleConfirm = async (event) => {
+    
     event.preventDefault();
     setError(null);
     try {
       setLoading(true);
       await setNewPassword(username, password, confirmationCode);
-      navigate("/login", { replace: true });
+      await login(username, password);
+      setToken();
+      setUser(getUser());
+      navigate("/", { replace: true });
+      // navigate("/login", { replace: true });
     } catch (ex) {
       setError(ex.response.data.message);
     } finally {
@@ -110,7 +116,7 @@ export default function ForgotPassword() {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="New Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
