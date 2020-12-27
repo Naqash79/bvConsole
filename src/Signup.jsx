@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
+  
   const classes = useStyles();
   const location = useLocation();
 
@@ -131,7 +132,7 @@ export default function SignUp() {
                 id="email"
                 label="Email Address"
                 name="email"
-                autoComplete="email"
+                autoComplete="email"s
                 disabled={confirm}
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
@@ -143,7 +144,7 @@ export default function SignUp() {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="New Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
