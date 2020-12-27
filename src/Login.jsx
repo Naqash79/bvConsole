@@ -126,7 +126,7 @@ export default function Login() {
                 to="/forgot-password"
                 variant="body2"
               >
-                Forgot Password?
+                Forgot Password
               </Link>
             </Grid>
             {/* <Grid item>
