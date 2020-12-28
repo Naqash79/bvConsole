@@ -11,13 +11,7 @@ import Container from "@material-ui/core/Container";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import {
-  confirmSignup,
-  getUser,
-  setToken,
-  login,
-  resendConfirmation,
-} from "./service";
+import { confirmSignup, getUser, setToken, login } from "./service";
 import { UserContext } from "./UserContext";
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\^$*.[\]{}()?\-“!@#%&/,><’:;|_~`])\S{8,99}$/;
@@ -53,17 +47,12 @@ export default function SignUp() {
   const [confirmationCode, setConfirmationCode] = useState(
     params.get("confirmationCode") || ""
   );
-  const [confirm, setConfirm] = useState(
-    username !== "" && confirmationCode !== "" ? true : false
-  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   const { setUser } = useContext(UserContext);
-
-  console.log(username, confirmationCode);
 
   const validatePassword = () => {
     if (password !== confirmPassword) {
@@ -77,20 +66,6 @@ export default function SignUp() {
       return false;
     }
     return true;
-  };
-
-  const handleSignup = async (event) => {
-    setError(null);
-    event.preventDefault();
-    try {
-      setLoading(true);
-      await resendConfirmation(username);
-      setConfirm(true);
-    } catch (ex) {
-      setError(ex.response?.data);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleConfirm = async (event) => {
@@ -122,11 +97,7 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form
-          className={classes.form}
-          noValidate
-          onSubmit={confirm ? handleConfirm : handleSignup}
-        >
+        <form className={classes.form} noValidate onSubmit={handleConfirm}>
           <Box marginY={2} hidden={error === null ? true : false}>
             <Alert severity="error">{error}</Alert>
           </Box>
@@ -144,7 +115,7 @@ export default function SignUp() {
                 onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12} hidden={!confirm}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -158,7 +129,7 @@ export default function SignUp() {
                 onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12} hidden={!confirm}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -171,7 +142,7 @@ export default function SignUp() {
                 onChange={(event) => setConfirmPassword(event.target.value)}
               />
             </Grid>
-            <Grid item xs={12} hidden={!confirm}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -193,15 +164,18 @@ export default function SignUp() {
             className={classes.submit}
             disabled={loading}
           >
-            {loading ? (
-              <CircularProgress />
-            ) : confirm ? (
-              "Confirm Signup"
-            ) : (
-              "Send Confirmation Code"
-            )}
+            {loading ? <CircularProgress /> : "Confirm Signup"}
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justify="space-between">
+            <Grid item>
+              <Link
+                component={RouterLink}
+                variant="body2"
+                to="/resend-confirmation"
+              >
+                Resend Confirmation
+              </Link>
+            </Grid>
             <Grid item>
               <Link component={RouterLink} to="/login" variant="body2">
                 Already have an account? Sign in

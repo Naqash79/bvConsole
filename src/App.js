@@ -7,6 +7,7 @@ import { getUser, refreshToken } from "./service";
 import { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import ForgotPassword from "./ForgotPassword";
+import ResendConfirmation from "./ResendConfirmation";
 
 const App = () => {
   useEffect(() => {
@@ -24,6 +25,9 @@ const App = () => {
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Routes>
+        <Route path="resend-confirmation">
+          <ResendConfirmation />
+        </Route>
         <Route path="/forgot-password">
           <ForgotPassword />
         </Route>

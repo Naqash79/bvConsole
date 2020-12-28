@@ -12,7 +12,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@material-ui/core";
 import { forgotPassword, setNewPassword } from "./service";
 import { Alert } from "@material-ui/lab";
-import {  getUser, setToken, login } from "./service";
+import { getUser, setToken, login } from "./service";
 import { UserContext } from "./UserContext";
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,7 +60,6 @@ export default function ForgotPassword() {
   };
 
   const handleConfirm = async (event) => {
-    
     event.preventDefault();
     setError(null);
     try {
