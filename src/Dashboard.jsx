@@ -1,4 +1,4 @@
-import { Box, Button, Container } from "@material-ui/core";
+import { Box, Button, Container, TextField } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -26,7 +26,18 @@ const Dashboard = () => {
 
   const columns = [
     { title: "Field Name", field: "fieldName" },
-    { title: "Field Value", field: "fieldValue" },
+    {
+      title: "Field Value",
+      field: "fieldValue",
+      editComponent: (props) => (
+        <TextField
+          multiline
+          fullWidth
+          value={props.value}
+          onChange={(e) => props.onChange(e.target.value)}
+        />
+      ),
+    },
   ];
 
   const mapData = () => {

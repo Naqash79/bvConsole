@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import ForgotPassword from "./ForgotPassword";
 import ResendConfirmation from "./ResendConfirmation";
+import ResetPassword from "./ResetPassword";
 
 const App = () => {
   useEffect(() => {
@@ -30,6 +31,9 @@ const App = () => {
         </Route>
         <Route path="/forgot-password">
           <ForgotPassword />
+        </Route>
+        <Route path="/reset-password">
+          <ResetPassword />
         </Route>
         <Route path="/signup">
           <SignUp />
