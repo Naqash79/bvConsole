@@ -25,8 +25,8 @@ const Dashboard = () => {
   }, [snackbar]);
 
   const columns = [
-    { title: "Field Name", field: "fieldName" },
-    { title: "Field Value", field: "fieldValue" },
+    { title: "THE QUESTION", field: "question" },
+    { title: "THE RESPONSE", field: "value" },
   ];
 
   const mapData = () => {
@@ -34,20 +34,21 @@ const Dashboard = () => {
     if (data === null) {
       return array;
     }
-    for (var key in data) {
-      if (
-        key !== "UserSub" &&
-        key !== "bv_client" &&
-        key !== "email" &&
-        key !== "Table"
-      ) {
-        array.push({
-          fieldName: key,
-          fieldValue: data[key],
-        });
-      }
-    }
-    return array;
+    return data;
+    // for (var key in data) {
+    //   if (
+    //     key !== "UserSub" &&
+    //     key !== "bv_client" &&
+    //     key !== "email" &&
+    //     key !== "Table"
+    //   ) {
+    //     array.push({
+    //       fieldName: key,
+    //       fieldValue: data[key],
+    //     });
+    //   }
+    // }
+   // return array;
   };
 
   const handleAdd = async (newData) => {
@@ -71,11 +72,14 @@ const Dashboard = () => {
   const handleUpdate = async (newData, oldData) => {
     setLoading(true);
     try {
-      let prevData = { ...data };
-      delete prevData[oldData.fieldName];
-      prevData = { [newData.fieldName]: newData.fieldValue, ...prevData };
-      await updateData(prevData);
-      setData(prevData);
+
+      const dataUpdate = [...data];
+        const index = oldData.tableData.id;
+        dataUpdate[index] = newData;
+        await updateData(newData);
+        setData([...dataUpdate]);
+      
+    
       snackbar("Data updated successfully.", { variant: "success" });
     } catch (ex) {
       snackbar("Unable to edit data.", { variant: "error" });
@@ -113,7 +117,7 @@ const Dashboard = () => {
           </Button>
         </Box>
         <MaterialTable
-          title="Dashboard"
+          title="The BonoVox Console"
           columns={columns}
           data={mapData()}
           options={{
@@ -124,7 +128,7 @@ const Dashboard = () => {
           editable={{
             // onRowAdd: (newData) => handleAdd(newData),
             onRowUpdate: (newData, oldData) => handleUpdate(newData, oldData),
-            onRowDelete: (oldData) => handleDelete(oldData),
+            // onRowDelete: (oldData) => handleDelete(oldData),
           }}
         />
       </Container>

@@ -7,7 +7,13 @@ import { getUser, refreshToken } from "./service";
 import { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import ForgotPassword from "./ForgotPassword";
+// import Background from './logo512.png';
 
+// var sectionStyle = {
+//   width: "100%",
+//   height: "400px",
+//   backgroundImage: "url(" + { Background } + ")"
+// };
 const App = () => {
   useEffect(() => {
     const refresh = async () => {
