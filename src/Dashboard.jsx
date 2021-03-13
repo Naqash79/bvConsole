@@ -10,6 +10,11 @@ const Dashboard = () => {
 
   const { enqueueSnackbar: snackbar } = useSnackbar();
 
+  const Image=<div id="container" style={{padding:'10px'}}> <img align="left" style={{height:'50px',width:'50px'}} src="./logo192.png"/><h3 style={{display:'inline-block'}}> 
+    The BonoVox Console
+  </h3></div>
+  const MaxHeight='100%'
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,7 +31,14 @@ const Dashboard = () => {
 
   const columns = [
     { title: "THE QUESTION", field: "question" },
-    { title: "THE RESPONSE", field: "value" },
+    { title: "THE RESPONSE", field: "value" },editComponent: (props) => (
+      <TextField
+        multiline
+        fullWidth
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+      />
+    ),
   ];
 
   const mapData = () => {
@@ -117,12 +129,12 @@ const Dashboard = () => {
           </Button>
         </Box>
         <MaterialTable
-          title="The BonoVox Console"
+          title={Image}
           columns={columns}
           data={mapData()}
           options={{
             actionsColumnIndex: -1,
-            maxBodyHeight: 500,
+            maxBodyHeight: MaxHeight,
           }}
           isLoading={loading}
           editable={{
