@@ -9,7 +9,13 @@ import { UserContext } from "./UserContext";
 import ForgotPassword from "./ForgotPassword";
 import ResendConfirmation from "./ResendConfirmation";
 import ResetPassword from "./ResetPassword";
+// import Background from './logo512.png';
 
+// var sectionStyle = {
+//   width: "100%",
+//   height: "400px",
+//   backgroundImage: "url(" + { Background } + ")"
+// };
 const App = () => {
   useEffect(() => {
     const refresh = async () => {
